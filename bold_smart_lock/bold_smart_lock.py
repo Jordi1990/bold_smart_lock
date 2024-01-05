@@ -8,6 +8,8 @@ from .const import (
     DEVICE_SERVICE,
     GATEWAY_SERVICE,
     EFFECTIVE_DEVICE_PERMISSIONS_SERVICE,
+    HANDSHAKES_DEVICE_SERVICE,
+    ACTIVATE_DEVICE_COMMAND_SERVICE,
 )
 from .exceptions import (
     ActivationError,
@@ -93,5 +95,29 @@ class BoldSmartLock:
                 raise GateWayCurrentSatatusError
 
             return response_json
+        except Exception as exception:
+            raise exception
+
+    async def get_device_handshake(self, device_id: int):
+        """Get the handshake for the device, used to authenticate through BLE."""
+        try:
+            response = await self._auth.request(
+                "GET", f"{API_URL}{HANDSHAKES_DEVICE_SERVICE}?deviceId={device_id}"
+            )
+
+            response_json = await response.json()
+            return response_json[0]
+        except Exception as exception:
+            raise exception
+
+    async def get_activate_device_payload(self, device_id: int):
+        """Get the payload required to activate the device through BLE."""
+        try:
+            response = await self._auth.request(
+                "GET", f"{API_URL}{ACTIVATE_DEVICE_COMMAND_SERVICE}?deviceId={device_id}"
+            )
+
+            response_json = await response.json()
+            return response_json[0]
         except Exception as exception:
             raise exception
